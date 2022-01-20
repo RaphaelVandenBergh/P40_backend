@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using P4._0_backend.Data;
 using P4._0_backend.Models;
+using P4._0_backend.Services;
 
 namespace P4._0_backend.Controllers
 {
@@ -14,11 +15,13 @@ namespace P4._0_backend.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private IUserService _userService;
         private readonly DataContext _context;
 
-        public UsersController(DataContext context)
+        public UsersController(IUserService userService, DataContext context)
         {
             _context = context;
+            _userService = userService;
         }
 
         // GET: api/Users
@@ -82,6 +85,17 @@ namespace P4._0_backend.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetUsers", new { id = users.ID }, users);
+        }
+
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody]Users userParam)
+        {
+            var user = _userService.Authenticate(userParam.Username, userParam.Password);
+            if (user == null)
+            {
+                return BadRequest(new { message = "Username or password is incorrect" });
+            }
+            return Ok(user);
         }
 
         // DELETE: api/Users/5

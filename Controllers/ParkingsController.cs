@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace P4._0_backend.Controllers
         }
 
         // GET: api/Parkings
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Parking>>> GetParking()
         {
