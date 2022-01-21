@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,5 +15,10 @@ namespace P4._0_backend.Models
         public string Password { get; set; }
 
         public string email { get; set; }
+
+        public int userLevel { get; set; }
+
+        [NotMapped]
+        public string Token { get; set; }
     }
 }
