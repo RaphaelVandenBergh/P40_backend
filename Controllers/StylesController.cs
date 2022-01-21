@@ -13,52 +13,52 @@ namespace P4._0_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ParkingsController : ControllerBase
+    public class StylesController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public ParkingsController(DataContext context)
+        public StylesController(DataContext context)
         {
             _context = context;
         }
 
-        // GET: api/Parkings
+        // GET: api/Styles
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Parking>>> GetParking()
+        public async Task<ActionResult<IEnumerable<Style>>> GetStyle()
         {
-            return await _context.Parking.ToListAsync();
+            return await _context.Style.ToListAsync();
         }
 
-        // GET: api/Parkings/5
+        // GET: api/Styles/5
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Parking>> GetParking(int id)
+        public async Task<ActionResult<Style>> GetStyle(int id)
         {
-            var parking = await _context.Parking.FindAsync(id);
+            var style = await _context.Style.FindAsync(id);
 
-            if (parking == null)
+            if (style == null)
             {
                 return NotFound();
             }
 
-            return parking;
+            return style;
         }
 
-        // PUT: api/Parkings/5
+        // PUT: api/Styles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutParking(int id, Parking parking)
+        public async Task<IActionResult> PutStyle(int id, Style style)
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                if (id != parking.ID)
+                if (id != style.ID)
                 {
                     return BadRequest();
                 }
 
-                _context.Entry(parking).State = EntityState.Modified;
+                _context.Entry(style).State = EntityState.Modified;
 
                 try
                 {
@@ -66,7 +66,7 @@ namespace P4._0_backend.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ParkingExists(id))
+                    if (!StyleExists(id))
                     {
                         return NotFound();
                     }
@@ -77,42 +77,46 @@ namespace P4._0_backend.Controllers
                 }
 
                 return NoContent();
-
             }
+
             return Unauthorized();
+
            
         }
 
-        // POST: api/Parkings
+        // POST: api/Styles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Parking>> PostParking(Parking parking)
+        public async Task<ActionResult<Style>> PostStyle(Style style)
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                _context.Parking.Add(parking);
+                _context.Style.Add(style);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction("GetParking", new { id = parking.ID }, parking);
+                return CreatedAtAction("GetStyle", new { id = style.ID }, style);
             }
+
             return Unauthorized();
+
+            
         }
 
-        // DELETE: api/Parkings/5
+        // DELETE: api/Styles/5
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteParking(int id)
+        public async Task<IActionResult> DeleteStyle(int id)
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                var parking = await _context.Parking.FindAsync(id);
-                if (parking == null)
+                var style = await _context.Style.FindAsync(id);
+                if (style == null)
                 {
                     return NotFound();
                 }
 
-                _context.Parking.Remove(parking);
+                _context.Style.Remove(style);
                 await _context.SaveChangesAsync();
 
                 return NoContent();
@@ -123,9 +127,9 @@ namespace P4._0_backend.Controllers
             
         }
 
-        private bool ParkingExists(int id)
+        private bool StyleExists(int id)
         {
-            return _context.Parking.Any(e => e.ID == id);
+            return _context.Style.Any(e => e.ID == id);
         }
     }
 }

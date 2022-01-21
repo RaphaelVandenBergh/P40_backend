@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace P4._0_backend.Controllers
         }
 
         // GET: api/Passing_Cars
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Passing_Cars>>> GetPassing_Cars()
         {
@@ -29,6 +31,7 @@ namespace P4._0_backend.Controllers
         }
 
         // GET: api/Passing_Cars/5
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Passing_Cars>> GetPassing_Cars(int id)
         {
@@ -44,60 +47,78 @@ namespace P4._0_backend.Controllers
 
         // PUT: api/Passing_Cars/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPassing_Cars(int id, Passing_Cars passing_Cars)
         {
-            if (id != passing_Cars.ID)
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                return BadRequest();
-            }
-
-            _context.Entry(passing_Cars).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!Passing_CarsExists(id))
+                if (id != passing_Cars.ID)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                _context.Entry(passing_Cars).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!Passing_CarsExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return NoContent();
+            }
+            return Unauthorized();
+            
         }
 
         // POST: api/Passing_Cars
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Passing_Cars>> PostPassing_Cars(Passing_Cars passing_Cars)
         {
-            _context.Passing_Cars.Add(passing_Cars);
-            await _context.SaveChangesAsync();
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
+            {
+                _context.Passing_Cars.Add(passing_Cars);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPassing_Cars", new { id = passing_Cars.ID }, passing_Cars);
+                return CreatedAtAction("GetPassing_Cars", new { id = passing_Cars.ID }, passing_Cars);
+            }
+            return Unauthorized();
+            
         }
 
         // DELETE: api/Passing_Cars/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePassing_Cars(int id)
         {
-            var passing_Cars = await _context.Passing_Cars.FindAsync(id);
-            if (passing_Cars == null)
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                return NotFound();
+                var passing_Cars = await _context.Passing_Cars.FindAsync(id);
+                if (passing_Cars == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Passing_Cars.Remove(passing_Cars);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
-
-            _context.Passing_Cars.Remove(passing_Cars);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Unauthorized();
+            
         }
 
         private bool Passing_CarsExists(int id)

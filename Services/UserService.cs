@@ -40,7 +40,8 @@ namespace P4._0_backend.Services
                 Subject = new System.Security.Claims.ClaimsIdentity(new Claim[] {
                     new Claim("UserID", user.ID.ToString()),
                     new Claim("Email", user.email),
-                    new Claim("Username", user.Username)
+                    new Claim("Username", user.Username),
+                    new Claim("UserLevel", user.userLevel.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)

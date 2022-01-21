@@ -18,7 +18,9 @@ namespace P4._0_backend.Models
             }
 
             context.AddRange(
-                new Users { email="admin@admin.com", Username = "Admin", Password = "Admin"});
+                new Users { email="admin@admin.com", Username = "Admin", Password = "Admin", userLevel=1},
+                new Users { email="user@user.com", Username= "User", Password= "User", userLevel = 2});
+
             context.SaveChanges();
         }
     }

@@ -16,6 +16,8 @@ namespace P4._0_backend.Models
 
         public string email { get; set; }
 
+        public int userLevel { get; set; }
+
         [NotMapped]
         public string Token { get; set; }
     }
