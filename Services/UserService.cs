@@ -27,7 +27,7 @@ namespace P4._0_backend.Services
 
         public Users Authenticate(string username, string password)
         {
-            var user = _dataContext.Users.SingleOrDefault(x => x.Username == username && x.Password == password);
+            var user = _dataContext.Users.SingleOrDefault(x => x.email == username && x.Password == password);
 
             if (user == null)
             {
@@ -40,7 +40,6 @@ namespace P4._0_backend.Services
                 Subject = new System.Security.Claims.ClaimsIdentity(new Claim[] {
                     new Claim("UserID", user.ID.ToString()),
                     new Claim("Email", user.email),
-                    new Claim("Username", user.Username),
                     new Claim("UserLevel", user.userLevel.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),

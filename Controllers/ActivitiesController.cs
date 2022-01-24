@@ -8,72 +8,69 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using P4._0_backend.Data;
 using P4._0_backend.Models;
-using P4._0_backend.Services;
 
 namespace P4._0_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class ActivitiesController : ControllerBase
     {
-        private IUserService _userService;
         private readonly DataContext _context;
 
-        public UsersController(IUserService userService, DataContext context)
+        public ActivitiesController(DataContext context)
         {
             _context = context;
-            _userService = userService;
         }
 
-        // GET: api/Users
+        // GET: api/Activities
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<Activity>>> GetActivity()
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                return await _context.Users.ToListAsync();
+                return await _context.Activity.ToListAsync();
             }
 
             return Unauthorized();
             
         }
 
-        // GET: api/Users/5
+        // GET: api/Activities/5
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Users>> GetUsers(int id)
+        public async Task<ActionResult<Activity>> GetActivity(int id)
         {
-            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserID").Value) == id || Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                var users = await _context.Users.FindAsync(id);
+                var activity = await _context.Activity.FindAsync(id);
 
-                if (users == null)
+                if (activity == null)
                 {
                     return NotFound();
                 }
 
-                return users;
+                return activity;
             }
 
             return Unauthorized();
-           
+            
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Activities/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsers(int id, Users users)
+        public async Task<IActionResult> PutActivity(int id, Activity activity)
         {
-            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserID").Value) == id)
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                if (id != users.ID)
+                if (id != activity.ID)
                 {
                     return BadRequest();
                 }
 
-                _context.Entry(users).State = EntityState.Modified;
+                _context.Entry(activity).State = EntityState.Modified;
 
                 try
                 {
@@ -81,7 +78,7 @@ namespace P4._0_backend.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UsersExists(id))
+                    if (!ActivityExists(id))
                     {
                         return NotFound();
                     }
@@ -98,55 +95,51 @@ namespace P4._0_backend.Controllers
             
         }
 
-        // POST: api/Users
+        // POST: api/Activities
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Users>> PostUsers(Users users)
-        {
-            
-            _context.Users.Add(users);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUsers", new { id = users.ID }, users);
-        }
-
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]Users userParam)
-        {
-            var user = _userService.Authenticate(userParam.email, userParam.Password);
-            if (user == null)
-            {
-                return BadRequest(new { message = "Username or password is incorrect" });
-            }
-            return Ok(user);
-        }
-
-        // DELETE: api/Users/5
         [Authorize]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUsers(int id)
+        [HttpPost]
+        public async Task<ActionResult<Activity>> PostActivity(Activity activity)
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                var users = await _context.Users.FindAsync(id);
-                if (users == null)
+                activity.Created_at = DateTime.Now;
+                _context.Activity.Add(activity);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetActivity", new { id = activity.ID }, activity);
+            }
+
+            return Unauthorized();
+            
+        }
+
+        // DELETE: api/Activities/5
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteActivity(int id)
+        {
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
+            {
+                var activity = await _context.Activity.FindAsync(id);
+                if (activity == null)
                 {
                     return NotFound();
                 }
 
-                _context.Users.Remove(users);
+                _context.Activity.Remove(activity);
                 await _context.SaveChangesAsync();
 
                 return NoContent();
             }
 
             return Unauthorized();
-           
+            
         }
 
-        private bool UsersExists(int id)
+        private bool ActivityExists(int id)
         {
-            return _context.Users.Any(e => e.ID == id);
+            return _context.Activity.Any(e => e.ID == id);
         }
     }
 }

@@ -24,5 +24,7 @@ namespace P4._0_backend.Data
 
        public DbSet<P4._0_backend.Models.Style> Style { get; set; }
 
+       public DbSet<P4._0_backend.Models.Activity> Activity { get; set; }
+
     }
 }
