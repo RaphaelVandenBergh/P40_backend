@@ -90,6 +90,10 @@ namespace P4._0_backend.Controllers
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
+                if (passing_Cars.timestamp == null)
+                {
+                    passing_Cars.timestamp = DateTime.Now;
+                }
                 _context.Passing_Cars.Add(passing_Cars);
                 await _context.SaveChangesAsync();
 

@@ -13,52 +13,52 @@ namespace P4._0_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StylesController : ControllerBase
+    public class ThemesController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public StylesController(DataContext context)
+        public ThemesController(DataContext context)
         {
             _context = context;
         }
 
-        // GET: api/Styles
+        // GET: api/Themes
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Style>>> GetStyle()
+        public async Task<ActionResult<IEnumerable<Theme>>> GetStyles()
         {
-            return await _context.Style.ToListAsync();
+            return await _context.Themes.ToListAsync();
         }
 
-        // GET: api/Styles/5
+        // GET: api/Themes/5
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Style>> GetStyle(int id)
+        public async Task<ActionResult<Theme>> GetTheme(int id)
         {
-            var style = await _context.Style.FindAsync(id);
+            var theme = await _context.Themes.FindAsync(id);
 
-            if (style == null)
+            if (theme == null)
             {
                 return NotFound();
             }
 
-            return style;
+            return theme;
         }
 
-        // PUT: api/Styles/5
+        // PUT: api/Themes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutStyle(int id, Style style)
+        public async Task<IActionResult> PutTheme(int id, Theme theme)
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                if (id != style.ID)
+                if (id != theme.ID)
                 {
                     return BadRequest();
                 }
 
-                _context.Entry(style).State = EntityState.Modified;
+                _context.Entry(theme).State = EntityState.Modified;
 
                 try
                 {
@@ -66,7 +66,7 @@ namespace P4._0_backend.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StyleExists(id))
+                    if (!ThemeExists(id))
                     {
                         return NotFound();
                     }
@@ -80,56 +80,53 @@ namespace P4._0_backend.Controllers
             }
 
             return Unauthorized();
-
-           
-        }
-
-        // POST: api/Styles
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize]
-        [HttpPost]
-        public async Task<ActionResult<Style>> PostStyle(Style style)
-        {
-            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
-            {
-                _context.Style.Add(style);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction("GetStyle", new { id = style.ID }, style);
-            }
-
-            return Unauthorized();
-
             
         }
 
-        // DELETE: api/Styles/5
+        // POST: api/Themes
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStyle(int id)
+        [HttpPost]
+        public async Task<ActionResult<Theme>> PostTheme(Theme theme)
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                var style = await _context.Style.FindAsync(id);
-                if (style == null)
+                _context.Themes.Add(theme);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetTheme", new { id = theme.ID }, theme);
+            }
+
+            return Unauthorized();
+            
+        }
+
+        // DELETE: api/Themes/5
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTheme(int id)
+        {
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
+            {
+                var theme = await _context.Themes.FindAsync(id);
+                if (theme == null)
                 {
                     return NotFound();
                 }
 
-                _context.Style.Remove(style);
+                _context.Themes.Remove(theme);
                 await _context.SaveChangesAsync();
 
                 return NoContent();
             }
 
             return Unauthorized();
-
             
         }
 
-        private bool StyleExists(int id)
+        private bool ThemeExists(int id)
         {
-            return _context.Style.Any(e => e.ID == id);
+            return _context.Themes.Any(e => e.ID == id);
         }
     }
 }

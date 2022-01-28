@@ -87,8 +87,8 @@ namespace P4._0_backend
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .AllowAnyMethod();
             }));
         }
 
@@ -112,6 +112,8 @@ namespace P4._0_backend
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseCors("MyPolicy");
 
             app.UseEndpoints(endpoints =>
             {

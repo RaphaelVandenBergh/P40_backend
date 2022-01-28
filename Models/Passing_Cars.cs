@@ -11,7 +11,10 @@ namespace P4._0_backend.Models
 
         public int Amount_cars { get; set; }
 
-        public int Amount_Trucks { get; set; }
+        public int Amount_trucks { get; set; }
+        public int Amount_bikers { get; set; }
+        public int Amount_motorcycle { get; set; }
+        public int Amount_bus { get; set; }
 
         public DateTime timestamp { get; set; }
     }
