@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using P4._0_backend.Data;
+using P4._0_backend.Helpers;
 using P4._0_backend.Models;
 
 namespace P4._0_backend.Controllers
@@ -28,6 +29,28 @@ namespace P4._0_backend.Controllers
         public async Task<ActionResult<IEnumerable<Theme>>> GetStyles()
         {
             return await _context.Themes.ToListAsync();
+        }
+
+        
+        [HttpGet("Active")]
+        public async Task<ActionResult<Theme>> GetActive()
+        {
+            return await _context.Themes.Where(t => t.Active == true).SingleAsync();
+        }
+        
+        [Authorize]
+        [HttpGet("count")]
+        public async Task<ActionResult<Count>> GetAmount()
+        {
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
+            {
+                var amount = await _context.Themes.CountAsync();
+                Count counter = new Count();
+                counter.count = amount;
+                return counter;
+            }
+            return Unauthorized();
+            
         }
 
         // GET: api/Themes/5

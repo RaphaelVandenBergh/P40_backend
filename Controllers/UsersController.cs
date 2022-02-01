@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using P4._0_backend.Data;
+using P4._0_backend.Helpers;
 using P4._0_backend.Models;
 using P4._0_backend.Services;
 
@@ -37,6 +38,21 @@ namespace P4._0_backend.Controllers
                 return await _context.Users.ToListAsync();
             }
 
+            return Unauthorized();
+            
+        }
+        [Authorize]
+        [HttpGet("count")]
+        public async Task<ActionResult<Count>> GetAmount()
+        {
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
+            {
+                var amount = await _context.Users.CountAsync();
+                Count counter = new Count();
+                counter.count = amount;
+
+                return counter;
+            }
             return Unauthorized();
             
         }
