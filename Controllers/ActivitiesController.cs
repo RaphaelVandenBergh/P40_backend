@@ -25,11 +25,12 @@ namespace P4._0_backend.Controllers
         // GET: api/Activities
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Activity>>> GetActivity()
+        public async Task<ActionResult<IEnumerable<Activity>>> GetActivity([FromQuery] PaginationParameters parameters)
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                return await _context.Activity.ToListAsync();
+                var activitylist = await _context.Activity.ToListAsync();
+                return activitylist.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize).ToList();
             }
 
             return Unauthorized();

@@ -42,7 +42,7 @@ namespace P4._0_backend.Services
                     new Claim("Email", user.email),
                     new Claim("UserLevel", user.userLevel.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(365),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

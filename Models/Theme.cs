@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace P4._0_backend.Models
 {
-    public class Style
+    public class Theme
     {
         public int ID { get; set; }
 

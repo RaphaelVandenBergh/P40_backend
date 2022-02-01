@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using P4._0_backend.Data;
+using P4._0_backend.Helpers;
 using P4._0_backend.Models;
 using P4._0_backend.Services;
 
@@ -35,6 +38,21 @@ namespace P4._0_backend.Controllers
                 return await _context.Users.ToListAsync();
             }
 
+            return Unauthorized();
+            
+        }
+        [Authorize]
+        [HttpGet("count")]
+        public async Task<ActionResult<Count>> GetAmount()
+        {
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
+            {
+                var amount = await _context.Users.CountAsync();
+                Count counter = new Count();
+                counter.count = amount;
+
+                return counter;
+            }
             return Unauthorized();
             
         }
@@ -73,6 +91,51 @@ namespace P4._0_backend.Controllers
                     return BadRequest();
                 }
 
+                using (SHA1 sha1Hash = SHA1.Create())
+                {
+                    byte[] sourceBytes = Encoding.UTF8.GetBytes(users.Password);
+                    byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
+                    string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                    users.Password = hash;
+                }
+
+                users.userLevel = 2;
+
+                _context.Entry(users).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UsersExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return NoContent();
+            }
+            else if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
+            {
+                if (id != users.ID)
+                {
+                    return BadRequest();
+                }
+
+                using (SHA1 sha1Hash = SHA1.Create())
+                {
+                    byte[] sourceBytes = Encoding.UTF8.GetBytes(users.Password);
+                    byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
+                    string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                    users.Password = hash;
+                }
+
                 _context.Entry(users).State = EntityState.Modified;
 
                 try
@@ -103,16 +166,32 @@ namespace P4._0_backend.Controllers
         [HttpPost]
         public async Task<ActionResult<Users>> PostUsers(Users users)
         {
+            using(SHA1 sha1Hash = SHA1.Create())
+            {
+                byte[] sourceBytes = Encoding.UTF8.GetBytes(users.Password);
+                byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
+                string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                users.Password = hash;
+            }
+            users.userLevel = 2;
             
             _context.Users.Add(users);
             await _context.SaveChangesAsync();
+            var user = _userService.Authenticate(users.email, users.Password);
 
-            return CreatedAtAction("GetUsers", new { id = users.ID }, users);
+            return CreatedAtAction("GetUsers", new { id = users.ID }, user);
         }
 
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]Users userParam)
         {
+            using (SHA1 sha1Hash = SHA1.Create())
+            {
+                byte[] sourceBytes = Encoding.UTF8.GetBytes(userParam.Password);
+                byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
+                string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                userParam.Password = hash;
+            }
             var user = _userService.Authenticate(userParam.email, userParam.Password);
             if (user == null)
             {
