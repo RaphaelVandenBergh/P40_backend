@@ -13,6 +13,7 @@ namespace P4._0_backend.Models
 
         public string AccentColor { get; set; }
         public string LogoUrl { get; set; }
+        public bool textWhite { get; set; }
         public bool Active { get; set; }
     }
 }

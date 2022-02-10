@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using P4._0_backend.Data;
@@ -78,30 +79,52 @@ namespace P4._0_backend.Controllers
            
         }
 
+
+
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsers(int id, Users users)
         {
-            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserID").Value) == id)
+            var entity = await _context.Users.FindAsync(id);
+            if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserID").Value) == id && Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) != 1)
             {
                 if (id != users.ID)
                 {
                     return BadRequest();
                 }
-
-                using (SHA1 sha1Hash = SHA1.Create())
+                
+                if (users.Password != null && users.Password != "")
                 {
-                    byte[] sourceBytes = Encoding.UTF8.GetBytes(users.Password);
-                    byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
-                    string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
-                    users.Password = hash;
+                    using (SHA1 sha1Hash = SHA1.Create())
+                    {
+                        byte[] sourceBytes = Encoding.UTF8.GetBytes(users.Password);
+                        byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
+                        string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                        entity.Password = hash;
+                    }
                 }
+                if (users.LastName != null && users.LastName != "")
+                {
+                    entity.LastName = users.LastName;
+                }
+                if (users.FirstName != null && users.FirstName != "")
+                {
+                    entity.FirstName = users.FirstName;
+                }
+                if (users.email != null && users.email != "")
+                {
+                    entity.email = users.email;
+                }
+               
+
+
+
 
                 users.userLevel = 2;
 
-                _context.Entry(users).State = EntityState.Modified;
+                _context.Entry(entity).State = EntityState.Modified;
 
                 try
                 {
@@ -127,16 +150,35 @@ namespace P4._0_backend.Controllers
                 {
                     return BadRequest();
                 }
-
-                using (SHA1 sha1Hash = SHA1.Create())
+                if (users.Password != null && users.Password != "")
                 {
-                    byte[] sourceBytes = Encoding.UTF8.GetBytes(users.Password);
-                    byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
-                    string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
-                    users.Password = hash;
+                    using (SHA1 sha1Hash = SHA1.Create())
+                    {
+                        byte[] sourceBytes = Encoding.UTF8.GetBytes(users.Password);
+                        byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
+                        string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                        entity.Password = hash;
+                    }
+                }
+                if (users.LastName != null && users.LastName != "")
+                {
+                    entity.LastName = users.LastName;
+                }
+                if (users.FirstName != null && users.FirstName != "")
+                {
+                    entity.FirstName = users.FirstName;
+                }
+                if (users.email != null && users.email != "")
+                {
+                    entity.email = users.email;
+                }
+                if (users.userLevel != 0)
+                {
+                    entity.userLevel = users.userLevel;
                 }
 
-                _context.Entry(users).State = EntityState.Modified;
+
+                _context.Entry(entity).State = EntityState.Modified;
 
                 try
                 {
@@ -166,14 +208,35 @@ namespace P4._0_backend.Controllers
         [HttpPost]
         public async Task<ActionResult<Users>> PostUsers(Users users)
         {
-            using(SHA1 sha1Hash = SHA1.Create())
+            if (User.Claims.FirstOrDefault() != null)
+            {
+                if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
+                {
+                    using (SHA1 sha1Hash = SHA1.Create())
+                    {
+                        byte[] sourceBytes = Encoding.UTF8.GetBytes(users.Password);
+                        byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
+                        string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
+                        users.Password = hash;
+                    }
+
+
+                    _context.Users.Add(users);
+                    await _context.SaveChangesAsync();
+                    var user2 = _userService.Authenticate(users.email, users.Password);
+
+                    return CreatedAtAction("GetUsers", new { id = users.ID }, user2);
+                }
+            }
+            
+            using (SHA1 sha1Hash = SHA1.Create())
             {
                 byte[] sourceBytes = Encoding.UTF8.GetBytes(users.Password);
                 byte[] hashBytes = sha1Hash.ComputeHash(sourceBytes);
                 string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                 users.Password = hash;
             }
-            users.userLevel = 2;
+            //users.userLevel = 2;
             
             _context.Users.Add(users);
             await _context.SaveChangesAsync();

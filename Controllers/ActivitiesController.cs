@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 using P4._0_backend.Data;
+using P4._0_backend.Helpers;
 using P4._0_backend.Models;
 
 namespace P4._0_backend.Controllers
@@ -30,7 +33,10 @@ namespace P4._0_backend.Controllers
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
                 var activitylist = await _context.Activity.ToListAsync();
+                var paginationMetaData = new PaginationMetadata(parameters.PageNumber, activitylist.Count(), parameters.PageSize);
+                Response.Headers.Add("X-Pagination" , JsonSerializer.Serialize(paginationMetaData));
                 return activitylist.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize).ToList();
+
             }
 
             return Unauthorized();

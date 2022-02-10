@@ -9,7 +9,7 @@ namespace P4._0_backend.Models
     {
         public int ID { get; set; }
         public int UsersId { get; set; }
-        public string Action { get; set; }
+        public string Path { get; set; }
         public string Description { get; set; }
         public DateTime Created_at { get; set; }
     }
