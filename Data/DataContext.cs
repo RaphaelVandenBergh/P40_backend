@@ -26,5 +26,7 @@ namespace P4._0_backend.Data
 
        public DbSet<P4._0_backend.Models.Activity> Activity { get; set; }
 
+       public DbSet<P4._0_backend.Models.Sensor> Sensor { get; set; }
+
     }
 }

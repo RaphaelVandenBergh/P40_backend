@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "mssql1": {
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/sqlsb/databases/P4.0",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/teama3/databases/TeamA3Data",
       "type": "mssql.azure",
       "connectionId": "DefaultConnection",
       "secretStore": "AzureAppSettings"

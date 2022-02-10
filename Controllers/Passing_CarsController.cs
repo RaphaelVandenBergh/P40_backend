@@ -30,6 +30,47 @@ namespace P4._0_backend.Controllers
             return await _context.Passing_Cars.ToListAsync();
         }
 
+        [Authorize]
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetAmount_Cars()
+        {
+            int counter = 0;
+            var listcars = await _context.Passing_Cars.ToListAsync();
+            foreach (var item in listcars)
+            {
+                counter += item.Amount_bikers;
+                counter += item.Amount_bus;
+                counter += item.Amount_cars;
+                counter += item.Amount_motorcycle;
+                counter += item.Amount_trucks;
+            }
+            return counter;
+        }
+        [Authorize]
+        [HttpGet("countday")]
+        public async Task<ActionResult<int>> GetAmount_Cars_Day([FromQuery] int days)
+        {
+            var counter = 0;
+            var today = DateTime.Now;
+            var listcars = await _context.Passing_Cars.ToListAsync();
+            
+            foreach (var item in listcars)
+            {
+                if (item.timestamp.CompareTo(today) <= 0 && item.timestamp.CompareTo(today.AddDays(-1*days)) > 0)
+                {
+                    counter += item.Amount_bikers;
+                    counter += item.Amount_bus;
+                    counter += item.Amount_cars;
+                    counter += item.Amount_motorcycle;
+                    counter += item.Amount_trucks;
+                    Console.WriteLine(item.Amount_cars);
+                }
+                
+                
+            }
+            return counter;
+        }
+
         // GET: api/Passing_Cars/5
         [Authorize]
         [HttpGet("{id}")]
@@ -92,7 +133,7 @@ namespace P4._0_backend.Controllers
             {
                 
                 
-                passing_Cars.timestamp = DateTime.Now;
+                //passing_Cars.timestamp = DateTime.Now;
                 
                 _context.Passing_Cars.Add(passing_Cars);
                 await _context.SaveChangesAsync();
