@@ -32,7 +32,7 @@ namespace P4._0_backend.Controllers
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
-                var activitylist = await _context.Activity.ToListAsync();
+                var activitylist = await _context.Activity.OrderByDescending(x => x.ID).ToListAsync();
                 var paginationMetaData = new PaginationMetadata(parameters.PageNumber, activitylist.Count(), parameters.PageSize);
                 Response.Headers.Add("X-Pagination" , JsonSerializer.Serialize(paginationMetaData));
                 return activitylist.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize).ToList();
