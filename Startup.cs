@@ -88,7 +88,9 @@ namespace P4._0_backend
             {
                 builder.AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .WithExposedHeaders("x-pagination");
+                
             }));
         }
 

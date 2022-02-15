@@ -20,6 +20,7 @@ namespace P4._0_backend.Data
             modelBuilder.Entity<Passing_Cars>().ToTable("Passing_Cars");
             modelBuilder.Entity<Users>().ToTable("Users");
             modelBuilder.Entity<Theme>().ToTable("Theme");
+            modelBuilder.Entity<Parkingspots>().ToTable("Parkingspots");
         }
 
        public DbSet<P4._0_backend.Models.Theme> Style { get; set; }
@@ -27,6 +28,8 @@ namespace P4._0_backend.Data
        public DbSet<P4._0_backend.Models.Activity> Activity { get; set; }
 
        public DbSet<P4._0_backend.Models.Sensor> Sensor { get; set; }
+
+       public DbSet<P4._0_backend.Models.Parkingspots> Parkingspots { get; set; }
 
     }
 }

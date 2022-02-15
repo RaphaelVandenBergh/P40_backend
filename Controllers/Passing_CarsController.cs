@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using P4._0_backend.Data;
+using P4._0_backend.Helpers;
 using P4._0_backend.Models;
 
 namespace P4._0_backend.Controllers
@@ -32,25 +33,73 @@ namespace P4._0_backend.Controllers
 
         [Authorize]
         [HttpGet("count")]
-        public async Task<ActionResult<int>> GetAmount_Cars()
+        public async Task<ActionResult<carcounter>> GetAmount_Cars()
         {
-            int counter = 0;
+            var car_counter = 0;
+            var bus_counter = 0;
+            var bike_counter = 0;
+            var motor_counter = 0;
+            var truck_counter = 0;
             var listcars = await _context.Passing_Cars.ToListAsync();
             foreach (var item in listcars)
             {
-                counter += item.Amount_bikers;
-                counter += item.Amount_bus;
-                counter += item.Amount_cars;
-                counter += item.Amount_motorcycle;
-                counter += item.Amount_trucks;
+                bike_counter += item.Amount_bikers;
+                bus_counter += item.Amount_bus;
+                car_counter += item.Amount_cars;
+                motor_counter += item.Amount_motorcycle;
+                truck_counter += item.Amount_trucks;
             }
-            return counter;
+            carcounter response = new carcounter();
+            response.bikers_passed = bike_counter;
+            response.busses_passed = bus_counter;
+            response.cars_passed = car_counter;
+            response.motorcycles_passed = motor_counter;
+            response.Trucks_passed = truck_counter;
+            return response;
         }
         [Authorize]
-        [HttpGet("countday")]
-        public async Task<ActionResult<int>> GetAmount_Cars_Day([FromQuery] int days)
+        [HttpGet("countdate")]
+        public async Task<ActionResult<carcounter>> GetAmount_Cars_Date([FromQuery] string date)
         {
-            var counter = 0;
+            
+            var car_counter = 0;
+            var bus_counter = 0;
+            var bike_counter = 0;
+            var motor_counter = 0;
+            var truck_counter = 0;
+            var listcars = await _context.Passing_Cars.ToListAsync();
+            foreach (var item in listcars)
+            {
+                if (item.timestamp.Date.CompareTo(DateTime.Parse(date).Date) == 0)
+                {
+                    bike_counter += item.Amount_bikers;
+                    bus_counter += item.Amount_bus;
+                    car_counter += item.Amount_cars;
+                    motor_counter += item.Amount_motorcycle;
+                    truck_counter += item.Amount_trucks;
+                }
+            }
+            carcounter response = new carcounter();
+            response.bikers_passed = bike_counter;
+            response.busses_passed = bus_counter;
+            response.cars_passed = car_counter;
+            response.motorcycles_passed = motor_counter;
+            response.Trucks_passed = truck_counter;
+            return response;
+
+        }
+
+
+
+        [Authorize]
+        [HttpGet("countday")]
+        public async Task<ActionResult<carcounter>> GetAmount_Cars_Day([FromQuery] int days)
+        {
+            var car_counter = 0;
+            var bus_counter = 0;
+            var bike_counter = 0;
+            var motor_counter = 0;
+            var truck_counter = 0;
             var today = DateTime.Now;
             var listcars = await _context.Passing_Cars.ToListAsync();
             
@@ -58,17 +107,23 @@ namespace P4._0_backend.Controllers
             {
                 if (item.timestamp.CompareTo(today) <= 0 && item.timestamp.CompareTo(today.AddDays(-1*days)) > 0)
                 {
-                    counter += item.Amount_bikers;
-                    counter += item.Amount_bus;
-                    counter += item.Amount_cars;
-                    counter += item.Amount_motorcycle;
-                    counter += item.Amount_trucks;
-                    Console.WriteLine(item.Amount_cars);
+                    bike_counter += item.Amount_bikers;
+                    bus_counter += item.Amount_bus;
+                    car_counter += item.Amount_cars;
+                    motor_counter += item.Amount_motorcycle;
+                    truck_counter += item.Amount_trucks;
+                    
                 }
                 
                 
             }
-            return counter;
+            carcounter response = new carcounter();
+            response.bikers_passed = bike_counter;
+            response.busses_passed = bus_counter;
+            response.cars_passed = car_counter;
+            response.motorcycles_passed = motor_counter;
+            response.Trucks_passed = truck_counter;
+            return response;
         }
 
         // GET: api/Passing_Cars/5

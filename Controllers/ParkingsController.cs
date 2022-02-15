@@ -91,6 +91,7 @@ namespace P4._0_backend.Controllers
         {
             if (Int32.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserLevel").Value) == 1)
             {
+                parking.timestamp = DateTime.Now;
                 _context.Parking.Add(parking);
                 await _context.SaveChangesAsync();
 

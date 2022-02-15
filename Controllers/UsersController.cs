@@ -236,7 +236,7 @@ namespace P4._0_backend.Controllers
                 string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
                 users.Password = hash;
             }
-            //users.userLevel = 2;
+            users.userLevel = 2;
             
             _context.Users.Add(users);
             await _context.SaveChangesAsync();

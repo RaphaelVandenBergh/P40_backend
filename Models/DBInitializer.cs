@@ -12,6 +12,7 @@ namespace P4._0_backend.Models
         {
             context.Database.EnsureCreated();
 
+
             if (context.Users.Any())
             {
                 return;
